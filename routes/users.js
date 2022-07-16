@@ -1,27 +1,29 @@
 const express = require('express');
 const usersRouter = express.Router();
-const User = require('../database/models/user');
-const ObjectId = require('mongoose').Types.ObjectId;
-const { getUsers, getUser, createUser, deleteUser, updateUser } = require('../controllers/user');
+const UsersController = require('../controllers/usersController');
 const { body } = require('express-validator');
+const User = require('../database/models/user');
 
-usersRouter.get('/', getUsers);
+const usersController = new UsersController(User)
 
-usersRouter.get('/:id', getUser);
+usersRouter.get('/', usersController.getUsers);
 
-usersRouter.post('/', 
-    body('name').isString(), 
-    body('login').isString(), 
-    body('password').isString(), 
-    createUser);
+usersRouter.get('/:id', usersController.getUser);
 
-usersRouter.delete('/:id', deleteUser);
+usersRouter.post('/',
+    body('name').isString(),
+    body('login').isString(),
+    body('password').isString(),
+    usersController.createUser
+);
 
-usersRouter.patch('/:id', 
-    body('name').if(body('name').exists()).isString(), 
-    body('login').if(body('login').exists()).isString(), 
+usersRouter.delete('/:id', usersController.deleteUser);
+
+usersRouter.patch('/:id',
+    body('name').if(body('name').exists()).isString(),
+    body('login').if(body('login').exists()).isString(),
     body('password').if(body('password').exists()).isString(),
-    
-    updateUser);
+    usersController.updateUser
+);
 
 module.exports = usersRouter;
